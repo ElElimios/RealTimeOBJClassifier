@@ -11,10 +11,10 @@ const API_URL = "https://elelimios-real-time-object-classifier.hf.space/detect";
 const SEND_WIDTH = 320;
 const SEND_HEIGHT = 240;
 
-// 🎯 Set global para almacenar las clases descubiertas sin duplicados
+
 const discoveredClasses = new Set();
 
-// 🏷️ Las 80 clases oficiales del dataset COCO de YOLO
+
 const cocoClasses = [
     "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat",
     "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe",
@@ -27,15 +27,15 @@ const cocoClasses = [
     "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"
 ];
 
-// 🛠️ Generar la lista visual en el panel lateral al cargar la app
+
 function initChecklist() {
-    // Ordenamos alfabéticamente para que sea fácil de buscar por el usuario
+    
     const sortedClasses = [...cocoClasses].sort();
     
     sortedClasses.forEach(className => {
         const li = document.createElement("li");
         li.textContent = className;
-        // Le asignamos un ID plano para identificarlo rápido en el DOM (removiendo espacios)
+        
         li.id = `class-${className.replace(" ", "-")}`;
         checklistUI.appendChild(li);
     });
@@ -78,7 +78,7 @@ async function detectionLoop() {
                 const data = await res.json();
                 if (data.detections) {
                     drawDetections(data.detections);
-                    // 🎯 Analizar qué objetos nuevos se detectaron en este frame
+                    
                     checkNewDiscoveries(data.detections);
                 }
             } catch (err) {
@@ -89,19 +89,19 @@ async function detectionLoop() {
     setTimeout(detectionLoop, 60);
 }
 
-// 🎯 Revisa las detecciones y marca las nuevas estampitas encontradas
+
 function checkNewDiscoveries(detections) {
     detections.forEach(d => {
         const name = d.cls;
         
-        // Si el objeto pertenece a la lista y no lo habíamos descubierto antes
+        
         if (cocoClasses.includes(name) && !discoveredClasses.has(name)) {
             discoveredClasses.add(name);
             
-            // Actualizamos el contador numérico en la pantalla
+            
             counterUI.textContent = discoveredClasses.size;
             
-            // Buscamos el elemento LI en la interfaz y le metemos la clase CSS animada
+            
             const elementId = `class-${name.replace(" ", "-")}`;
             const itemElement = document.getElementById(elementId);
             if (itemElement) {
@@ -135,7 +135,7 @@ function drawDetections(detections) {
     });
 }
 
-// Arrancar todo ordenadamente
+
 initChecklist();
 startCamera().then(() => {
     detectionLoop();
