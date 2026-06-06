@@ -7,6 +7,9 @@ const offscreenCtx = offscreenCanvas.getContext("2d");
 
 const API_URL = "https://elelimios-real-time-object-classifier.hf.space/detect";
 
+
+let isProcessing = false;
+
 async function startCamera() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -19,13 +22,14 @@ async function startCamera() {
 }
 
 async function sendFrame() {
-    if (video.readyState !== 4) return;
+    
+    if (video.readyState !== 4 || isProcessing) return;
 
     
+    isProcessing = true;
+
     offscreenCanvas.width = video.videoWidth;
     offscreenCanvas.height = video.videoHeight;
-
-    // Tomamos la foto en el canvas oculto
     offscreenCtx.drawImage(video, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
 
     offscreenCanvas.toBlob(async (blob) => {
@@ -39,39 +43,42 @@ async function sendFrame() {
             });
 
             const data = await res.json();
-            if (!data.detections) return;
-
             
-            drawDetections(data.detections);
+            if (data.detections) {
+                drawDetections(data.detections);
+            } else {
+                console.error("Error del backend:", data);
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
 
         } catch (err) {
             console.error("Error en la petición:", err);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } finally {
+            
+            isProcessing = false;
         }
     }, "image/jpeg");
 }
 
 function drawDetections(detections) {
-    
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    
     ctx.lineWidth = 3;
     ctx.font = "bold 16px Arial";
-    ctx.strokeStyle = "#ff0000"; 
-    ctx.fillStyle = "#ff0000";
+    ctx.strokeStyle = "#00ff00"; 
+    ctx.fillStyle = "#00ff00";
 
     detections.forEach(d => {
         const w = d.x2 - d.x1;
         const h = d.y2 - d.y1;
 
-        
         ctx.strokeRect(d.x1, d.y1, w, h);
-        
-        
         ctx.fillText(
             `${d.cls} ${(d.conf * 100).toFixed(0)}%`,
             d.x1,
@@ -81,4 +88,5 @@ function drawDetections(detections) {
 }
 
 startCamera();
-setInterval(sendFrame, 200);
+
+setInterval(sendFrame, 100);
