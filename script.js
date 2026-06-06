@@ -11,9 +11,7 @@ const API_URL = "https://elelimios-real-time-object-classifier.hf.space/detect";
 const SEND_WIDTH = 320;
 const SEND_HEIGHT = 240;
 
-
 const discoveredClasses = new Set();
-
 
 const cocoClasses = [
     "person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat",
@@ -27,15 +25,11 @@ const cocoClasses = [
     "refrigerator", "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"
 ];
 
-
 function initChecklist() {
-    
     const sortedClasses = [...cocoClasses].sort();
-    
     sortedClasses.forEach(className => {
         const li = document.createElement("li");
         li.textContent = className;
-        
         li.id = `class-${className.replace(" ", "-")}`;
         checklistUI.appendChild(li);
     });
@@ -78,7 +72,6 @@ async function detectionLoop() {
                 const data = await res.json();
                 if (data.detections) {
                     drawDetections(data.detections);
-                    
                     checkNewDiscoveries(data.detections);
                 }
             } catch (err) {
@@ -86,21 +79,16 @@ async function detectionLoop() {
             }
         }
     }
-    setTimeout(detectionLoop, 60);
+    
+    setTimeout(detectionLoop, 100);
 }
-
 
 function checkNewDiscoveries(detections) {
     detections.forEach(d => {
         const name = d.cls;
-        
-        
         if (cocoClasses.includes(name) && !discoveredClasses.has(name)) {
             discoveredClasses.add(name);
-            
-            
             counterUI.textContent = discoveredClasses.size;
-            
             
             const elementId = `class-${name.replace(" ", "-")}`;
             const itemElement = document.getElementById(elementId);
@@ -112,8 +100,12 @@ function checkNewDiscoveries(detections) {
 }
 
 function drawDetections(detections) {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    
+    if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.lineWidth = 3;
@@ -134,7 +126,6 @@ function drawDetections(detections) {
         ctx.fillText(`${d.cls} ${(d.conf * 100).toFixed(0)}%`, x1, y1 - 7);
     });
 }
-
 
 initChecklist();
 startCamera().then(() => {
