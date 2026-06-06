@@ -34,11 +34,10 @@ async function sendFrame() {
 
         console.log("Detections:", detections);
 
-        // 🔥 FIX CRÍTICO
         if (!Array.isArray(detections)) {
-            console.error("Backend error:", detections);
-            return;
-        }
+                console.error("Backend error:", detections);
+                return;
+    }
 
         drawDetections(detections);
 
