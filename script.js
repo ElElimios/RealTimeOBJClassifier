@@ -7,9 +7,6 @@ const offscreenCtx = offscreenCanvas.getContext("2d");
 
 const API_URL = "https://elelimios-real-time-object-classifier.hf.space/detect";
 
-
-let isProcessing = false;
-
 async function startCamera() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -21,46 +18,47 @@ async function startCamera() {
     }
 }
 
-async function sendFrame() {
-    
-    if (video.readyState !== 4 || isProcessing) return;
 
-    
-    isProcessing = true;
+function getFrameBlob() {
+    return new Promise((resolve) => {
+        offscreenCanvas.width = video.videoWidth;
+        offscreenCanvas.height = video.videoHeight;
+        offscreenCtx.drawImage(video, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+        
+        offscreenCanvas.toBlob((blob) => {
+            resolve(blob);
+        }, "image/jpeg");
+    });
+}
 
-    offscreenCanvas.width = video.videoWidth;
-    offscreenCanvas.height = video.videoHeight;
-    offscreenCtx.drawImage(video, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
 
-    offscreenCanvas.toBlob(async (blob) => {
-        const formData = new FormData();
-        formData.append("image", blob, "frame.jpg");
+async function detectionLoop() {
+    if (video.readyState === 4) {
+        const blob = await getFrameBlob();
 
-        try {
-            const res = await fetch(API_URL, {
-                method: "POST",
-                body: formData
-            });
+        if (blob) {
+            const formData = new FormData();
+            formData.append("image", blob, "frame.jpg");
 
-            const data = await res.json();
-            
-            if (data.detections) {
-                drawDetections(data.detections);
-            } else {
-                console.error("Error del backend:", data);
-                
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (data.detections) {
+                    drawDetections(data.detections);
+                }
+            } catch (err) {
+                console.error("Error en la petición al backend:", err);
             }
-
-        } catch (err) {
-            console.error("Error en la petición:", err);
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        } finally {
-            
-            isProcessing = false;
         }
-    }, "image/jpeg");
+    }
+
+    
+    setTimeout(detectionLoop, 100);
 }
 
 function drawDetections(detections) {
@@ -87,6 +85,7 @@ function drawDetections(detections) {
     });
 }
 
-startCamera();
 
-setInterval(sendFrame, 100);
+startCamera().then(() => {
+    detectionLoop();
+});
