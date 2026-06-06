@@ -50,10 +50,11 @@ async function sendFrame() {
         const formData = new FormData();
         formData.append("image", blob, "frame.jpg");
 
-        const response = await fetch("https://elelimios-real-time-object-classifier.hf.space", {
+        const response = await fetch("https://elelimios-real-time-object-classifier.hf.space/detect", {
                                 method: "POST",
                                 body: formData
-        })
+                            })
+        
 
         const detections = await response.json();
 
