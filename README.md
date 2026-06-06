@@ -9,6 +9,7 @@ This project is a computer vision web application designed to detect objects in 
 NOTE: THIS MODEL STILL NEEDS SOME OPTIMIZATION BUT I WANTED TO TRY AND WORK WITH IT. I HOPE YOU LIKE IT.
 
 
+
  -------------------------Detectable Classes (80 COCO Classes)
 The model comes pre-trained on the COCO dataset and can recognize the following objects organized by category:
 ------ People & Vehicles
