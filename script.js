@@ -4,7 +4,19 @@ const ctx = canvas.getContext("2d");
 
 const API_URL = "https://elelimios-real-time-object-classifier.hf.space/detect";
 
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: 640, height: 480 } 
+        });
+        video.srcObject = stream;
+    } catch (err) {
+        console.error("Error al acceder a la cámara o permiso denegado:", err);
+    }
+}
+
 async function sendFrame() {
+    
     if (video.readyState !== 4) return;
 
     canvas.width = video.videoWidth;
@@ -32,12 +44,15 @@ async function sendFrame() {
             drawDetections(data.detections);
 
         } catch (err) {
-            console.error(err);
+            console.error("Error en la petición al backend:", err);
         }
     }, "image/jpeg");
 }
 
 function drawDetections(detections) {
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     ctx.lineWidth = 2;
     ctx.font = "16px Arial";
     ctx.strokeStyle = "red";
@@ -49,11 +64,15 @@ function drawDetections(detections) {
 
         ctx.strokeRect(d.x1, d.y1, w, h);
         ctx.fillText(
-            `${d.cls} ${(d.conf * 100).toFixed(0)}%`,
+            `Clase ${d.cls} ${(d.conf * 100).toFixed(0)}%`,
             d.x1,
             d.y1 - 5
         );
     });
 }
 
+
+startCamera();
+
+// Enviar el frame al backend cada 200ms
 setInterval(sendFrame, 200);
