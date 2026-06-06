@@ -22,7 +22,7 @@ Bus
 Train
 Truck
 Boat
-🐕 Animals
+------ Animals
 Bird
 Cat
 Dog
