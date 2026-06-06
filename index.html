@@ -3,17 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vision Computacional</title>
+    <title>Real-Time Object Classifier</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     
-<h1>Object Classifier</h1>
+    <div class="app-container">
+        <div class="camera-section">
+            <h1 class="title">Object Classifier</h1>
+            <div class="video-wrapper">
+                <video id="video" autoplay playsinline muted></video>
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
 
-<div class="container">
-    <video id="video" autoplay playsinline></video>
-    <canvas id="canvas"></canvas>
-</div>
+            <div class="album-section">
+            <h2>Discovered Objects</h2>
+            <div class="counter-badge">
+                <span id="discovered-count">0</span> / 80
+            </div>
+            <ul id="checklist"></ul>
+        </div>
+    </div>
 
 
 <script src="script.js"></script>

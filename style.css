@@ -1,30 +1,143 @@
 body {
-    background: #050505;
+    margin: 0;
+    padding: 0;
+    background-color: #0f0f12;
     color: #2763b3;
-    text-align: center;
     font-family: Arial, sans-serif;
+    overflow: hidden;
+    height: 100vh;
 }
 
-.container {
+.app-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100vw;
+}
+
+.camera-section {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #13131a;
+}
+
+.title {
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    color: #2d16b1;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.video-wrapper {
     position: relative;
-    width: 640px;
-    margin: auto;
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-video {
-    width: 640px;
-    height: 480px;
-    border: 2px solid #2763b3;
-    border-radius: 5px;
-    display: block;
-}
-
-canvas {
+#video, #canvas {
     position: absolute;
     top: 0;
     left: 0;
-    width: 640px;
-    height: 480px;
-    z-index: 100;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#canvas {
+    z-index: 2;
     pointer-events: none;
+}
+
+.album-section {
+    flex: 1;
+    background-color: #1e1e24;
+    border-left: 2px solid #2d2d39;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    max-height: 100vh;
+}
+
+.album-section h2 {
+    margin-top: 0;
+    font-size: 1.4rem;
+    text-align: center;
+    color: #f1f5f9;
+}
+
+.counter-badge {
+    background: linear-gradient(135deg, #062077, #11064e);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 5px;
+}
+
+#checklist li {
+    background-color: #272733;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    color: #94a3b8;
+    border-left: 4px solid #475569;
+    transition: all 0.4s cubic-bezier(0.175, 0885, 0.32, 1.275);
+}
+
+#checklist li.discovered {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #f8f8f8;
+    font-weight: bold;
+    border-left: 4px solid #1013b9;
+    transform: scale(1.02);
+}
+
+#checklist li.discovered::after {
+    content: "✓";
+    font-size: 1.1rem;
+    color: #0baf21;
+    font-weight: 900;
+}
+
+#checklist::-webkit-scrollbar {
+    width: 6px;
+}
+
+#checklist::-webkit-scrollbar-thumb {
+    background-color: #3f3f46;
+    border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+    .album-section {
+        max-height: 40vh;
+        border-left: none;
+        border-top: 2px solid #2d2d39;
+    }
 }
