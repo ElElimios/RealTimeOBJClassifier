@@ -7,6 +7,10 @@ const offscreenCtx = offscreenCanvas.getContext("2d");
 
 const API_URL = "https://elelimios-real-time-object-classifier.hf.space/detect";
 
+
+const SEND_WIDTH = 320;
+const SEND_HEIGHT = 240;
+
 async function startCamera() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -18,19 +22,21 @@ async function startCamera() {
     }
 }
 
-
 function getFrameBlob() {
     return new Promise((resolve) => {
-        offscreenCanvas.width = video.videoWidth;
-        offscreenCanvas.height = video.videoHeight;
-        offscreenCtx.drawImage(video, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
+        
+        offscreenCanvas.width = SEND_WIDTH;
+        offscreenCanvas.height = SEND_HEIGHT;
+        
+        
+        offscreenCtx.drawImage(video, 0, 0, SEND_WIDTH, SEND_HEIGHT);
+        
         
         offscreenCanvas.toBlob((blob) => {
             resolve(blob);
-        }, "image/jpeg");
+        }, "image/jpeg", 0.5); 
     });
 }
-
 
 async function detectionLoop() {
     if (video.readyState === 4) {
@@ -52,13 +58,12 @@ async function detectionLoop() {
                     drawDetections(data.detections);
                 }
             } catch (err) {
-                console.error("Error en la petición al backend:", err);
+                console.error("Error en la petición:", err);
             }
         }
     }
-
-    
-    setTimeout(detectionLoop, 100);
+    // Siguiente frame inmediato
+    setTimeout(detectionLoop, 50);
 }
 
 function drawDetections(detections) {
@@ -72,19 +77,25 @@ function drawDetections(detections) {
     ctx.strokeStyle = "#00ff00"; 
     ctx.fillStyle = "#00ff00";
 
-    detections.forEach(d => {
-        const w = d.x2 - d.x1;
-        const h = d.y2 - d.y1;
+    
+    const scaleX = canvas.width / SEND_WIDTH;
+    const scaleY = canvas.height / SEND_HEIGHT;
 
-        ctx.strokeRect(d.x1, d.y1, w, h);
+    detections.forEach(d => {
+        
+        const x1 = d.x1 * scaleX;
+        const y1 = d.y1 * scaleY;
+        const w = (d.x2 - d.x1) * scaleX;
+        const h = (d.y2 - d.y1) * scaleY;
+
+        ctx.strokeRect(x1, y1, w, h);
         ctx.fillText(
             `${d.cls} ${(d.conf * 100).toFixed(0)}%`,
-            d.x1,
-            d.y1 - 7
+            x1,
+            y1 - 7
         );
     });
 }
-
 
 startCamera().then(() => {
     detectionLoop();
