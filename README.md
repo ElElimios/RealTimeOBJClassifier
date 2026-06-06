@@ -1,5 +1,5 @@
 Real-Time Object Classifier 
-This project is a computer vision web application designed to detect objects in real time using the user's webcam. It features a decoupled architecture optimized to deliver the lowest possible latency on free-tier server environments.
+This project is a computer vision web application designed to detect objects in real time using the user's webcam. It features a decoupled architecture optimized to deliver the lowest possible latency on free-tier server environments. While you test different objects you will be able to check the object you discovered in the sidebar on the right. Good luck checking all!!!
 
 ---Project Architecture---
 -Backend (Hugging Face Spaces): A Flask-based API that receives optimized images, runs the YOLOv8 nano model limited to a single CPU thread (to prevent server saturation), and returns object coordinates along with their detection labels.
