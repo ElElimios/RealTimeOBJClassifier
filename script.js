@@ -7,7 +7,6 @@ const offscreenCtx = offscreenCanvas.getContext("2d");
 
 const API_URL = "https://elelimios-real-time-object-classifier.hf.space/detect";
 
-
 const SEND_WIDTH = 320;
 const SEND_HEIGHT = 240;
 
@@ -24,17 +23,14 @@ async function startCamera() {
 
 function getFrameBlob() {
     return new Promise((resolve) => {
-        
         offscreenCanvas.width = SEND_WIDTH;
         offscreenCanvas.height = SEND_HEIGHT;
-        
-        
         offscreenCtx.drawImage(video, 0, 0, SEND_WIDTH, SEND_HEIGHT);
         
         
         offscreenCanvas.toBlob((blob) => {
             resolve(blob);
-        }, "image/jpeg", 0.5); 
+        }, "image/jpeg", 0.4); 
     });
 }
 
@@ -62,8 +58,8 @@ async function detectionLoop() {
             }
         }
     }
-    // Siguiente frame inmediato
-    setTimeout(detectionLoop, 50);
+    
+    setTimeout(detectionLoop, 60);
 }
 
 function drawDetections(detections) {
@@ -74,15 +70,13 @@ function drawDetections(detections) {
 
     ctx.lineWidth = 3;
     ctx.font = "bold 16px Arial";
-    ctx.strokeStyle = "#00ff00"; 
-    ctx.fillStyle = "#00ff00";
+    ctx.strokeStyle = "#ff0000"; 
+    ctx.fillStyle = "#ff0000";
 
-    
     const scaleX = canvas.width / SEND_WIDTH;
     const scaleY = canvas.height / SEND_HEIGHT;
 
     detections.forEach(d => {
-        
         const x1 = d.x1 * scaleX;
         const y1 = d.y1 * scaleY;
         const w = (d.x2 - d.x1) * scaleX;
