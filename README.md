@@ -4,7 +4,7 @@ This project is a computer vision web application designed to detect objects in 
 ---Project Architecture---
 -Backend (Hugging Face Spaces): A Flask-based API that receives optimized images, runs the YOLOv8 nano model limited to a single CPU thread (to prevent server saturation), and returns object coordinates along with their detection labels.
 
--Frontend (Vercel): A modern web interface built with HTML5, CSS3, and pure JavaScript. It captures the video stream, processes frames using an in-memory offscreen canvas to drastically reduce bandwidth usage, and dynamically scales coordinates to draw bounding boxes accurately on the screen.
+-Frontend (Vercel): A modern web interface built with HTML, CSS, and JavaScript. It captures the video stream, processes frames using an in-memory offscreen canvas to drastically reduce bandwidth usage, and dynamically scales coordinates to draw bounding boxes accurately on the screen.
 
 NOTE: THIS MODEL STILL NEEDS SOME OPTIMIZATION BUT I WANTED TO TRY AND WORK WITH IT. I HOPE YOU LIKE IT.
 
@@ -98,5 +98,4 @@ Traffic light
 Fire hydrant
 Stop sign
 Parking meter
-
 Bench
